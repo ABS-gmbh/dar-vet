@@ -1,0 +1,8 @@
+#!/bin/sh
+# Runs dar-vet from the source tree. Builds the classpath with sbt on first use.
+DIR=$(cd "$(dirname "$0")/.." && pwd)
+CP="$DIR/target/classpath.txt"
+if [ ! -s "$CP" ] || [ -n "$(find "$DIR/src" -newer "$CP" -name '*.scala' | head -1)" ]; then
+  (cd "$DIR" && sbt -batch -error compile "export Runtime/fullClasspath" | tail -1 > "$CP") || exit 1
+fi
+exec java -Xss16m -cp "$(cat "$CP")" darvet.Main "$@"

@@ -1,0 +1,47 @@
+module Cov where
+
+-- helper used as a controller
+approver : Party -> Party -> Party
+approver issuer owner = owner
+
+-- helper used in a body
+payoutTo : Party -> Party -> Party
+payoutTo issuer owner = owner
+
+template Cov
+  with
+    issuer : Party
+    owner : Party
+    amount : Decimal
+  where
+    signatory issuer
+    observer owner
+
+    -- A: controller through a helper function
+    choice ViaHelper : ()
+      controller approver issuer owner
+      do pure ()
+
+    -- B: body change only (who receives the new contract)
+    choice Redeem : ContractId Cov
+      controller owner
+      do create this with owner = payoutTo issuer owner
+
+    -- C: body change: an assertion is removed
+    choice Split : ContractId Cov
+      with part : Decimal
+      controller owner
+      do
+        assertMsg "part must be positive and smaller" (part > 0.0 && part < amount)
+        create this with amount = part
+
+    -- D: choice observer change
+    choice Ping : ()
+      observer [] : [Party]
+      controller owner
+      do pure ()
+
+    -- E: non-consuming choice that will start creating contracts
+    nonconsuming choice Peek : ()
+      controller owner
+      do pure ()

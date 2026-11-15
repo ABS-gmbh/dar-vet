@@ -1,0 +1,6 @@
+sdk-version: 3.7.1
+name: cov
+version: 2.0.0
+source: daml
+dependencies: [daml-prim, daml-stdlib]
+upgrades: ../v1/.daml/dist/cov-1.0.0.dar

@@ -1,0 +1,8 @@
+sdk-version: 3.7.1
+name: asset
+version: 2.0.0
+source: daml
+dependencies:
+  - daml-prim
+  - daml-stdlib
+upgrades: ../asset-v1/.daml/dist/asset-1.0.0.dar

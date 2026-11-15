@@ -1,0 +1,25 @@
+module Before where
+
+import Daml.Script
+import Asset
+
+data Setup = Setup with
+    issuer : Party
+    owner : Party
+    other : Party
+    asset : ContractId Asset
+  deriving (Eq, Show)
+
+-- Only version 1 is on the ledger.
+-- The issuer creates an asset and cannot transfer it: only the owner can.
+beforeUpgrade : Script Setup
+beforeUpgrade = do
+  issuer <- allocateParty "Issuer"
+  owner <- allocateParty "Owner"
+  other <- allocateParty "Other"
+  asset <- submit issuer do
+    createCmd Asset with issuer; owner; amount = 100.0
+  submitMustFail issuer do
+    exerciseCmd asset Transfer with newOwner = other
+  debug "v1 only: the issuer cannot transfer the owner's asset"
+  pure Setup with ..

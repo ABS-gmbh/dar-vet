@@ -1,0 +1,46 @@
+module Cov where
+
+approver : Party -> Party -> Party
+approver issuer owner = issuer
+
+payoutTo : Party -> Party -> Party
+payoutTo issuer owner = issuer
+
+template Cov
+  with
+    issuer : Party
+    owner : Party
+    amount : Decimal
+  where
+    signatory issuer
+    observer owner
+
+    choice ViaHelper : ()
+      controller approver issuer owner
+      do pure ()
+
+    choice Redeem : ContractId Cov
+      controller owner
+      do create this with owner = payoutTo issuer owner
+
+    choice Split : ContractId Cov
+      with part : Decimal
+      controller owner
+      do
+        create this with amount = part
+
+    choice Ping : ()
+      observer [issuer, owner]
+      controller owner
+      do pure ()
+
+    nonconsuming choice Peek : ()
+      controller owner
+      do
+        _ <- create this
+        pure ()
+
+    -- F: new choice on an existing template
+    choice Reclaim : ContractId Cov
+      controller issuer
+      do create this with owner = issuer

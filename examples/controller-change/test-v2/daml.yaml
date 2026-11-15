@@ -1,0 +1,12 @@
+sdk-version: 3.7.1
+name: asset-test-v2
+version: 1.0.0
+source: daml
+dependencies: [daml-prim, daml-stdlib, daml-script]
+data-dependencies:
+  - ../asset-v1/.daml/dist/asset-1.0.0.dar
+  - ../asset-v2/.daml/dist/asset-2.0.0.dar
+  - ../test-v1/.daml/dist/asset-test-v1-1.0.0.dar
+module-prefixes:
+  asset-1.0.0: V1
+  asset-2.0.0: V2

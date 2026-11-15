@@ -1,0 +1,5 @@
+packages:
+  - ./asset-v1
+  - ./asset-v2
+  - ./test-v1
+  - ./test-v2

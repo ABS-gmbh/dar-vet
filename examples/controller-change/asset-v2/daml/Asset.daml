@@ -1,0 +1,25 @@
+module Asset where
+
+-- Version 2: a "maintenance" release.
+-- It adds an optional memo field (a normal compatible change), but it also
+-- changes who controls Transfer (owner -> issuer) and adds a Seize choice.
+template Asset
+  with
+    issuer : Party
+    owner : Party
+    amount : Decimal
+    memo : Optional Text
+  where
+    signatory issuer
+    observer owner
+    ensure amount > 0.0
+
+    choice Transfer : ContractId Asset
+      with
+        newOwner : Party
+      controller issuer
+      do create this with owner = newOwner
+
+    choice Seize : ContractId Asset
+      controller issuer
+      do create this with owner = issuer
